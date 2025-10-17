@@ -22,6 +22,9 @@
                                 </select>
                             </div>
 
+                            <input type="hidden" name="status" value="Aktif">
+
+
                             <br>
                             <div class="mb-3 d-flex flex-column">
                                 <button name="insert_kategori" type="submit" class="btn btn-primary">Simpan Data</button>

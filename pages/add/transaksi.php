@@ -25,14 +25,17 @@
 
                         <div class="col-md-6 mb-3">
                             <label for="nama_kategori" class="form-label">Nama Kategori</label>
-                            <select class="form-select" name="nama_kategori" required>
+                            <select class="form-select" name="nama_kategori" id="nama_kategori" required disabled>
                                 <option disabled selected>Pilih Nama</option>
                                 <?php
-                                $queryGetNama = "SELECT * FROM master_kategori";
+                                // Ambil semua kategori aktif, nanti akan difilter di JS
+                                $queryGetNama = "SELECT * FROM master_kategori WHERE status = 'Aktif'";
                                 $getNama = mysqli_query($koneksi, $queryGetNama);
+                                $kategoriList = [];
                                 while ($nama = mysqli_fetch_assoc($getNama)) {
+                                    $kategoriList[] = $nama; // simpan di array untuk JS
                                 ?>
-                                    <option value="<?= $nama['id_kategori'] ?>"><?= $nama['nama_kategori'] ?></option>
+                                    <option value="<?= $nama['id_kategori'] ?>" data-jenis="<?= $nama['jenis_kategori'] ?>"><?= $nama['nama_kategori'] ?></option>
                                 <?php } ?>
                             </select>
                         </div>
@@ -61,7 +64,28 @@
 </div>
 
 <script>
-    // Format ke Rupiah saat mengetik
+    const jenisSelect = document.getElementById('jenis_kategori');
+    const namaSelect = document.getElementById('nama_kategori');
+
+    // Simpan semua opsi kategori
+    const allKategoriOptions = Array.from(namaSelect.options);
+
+    jenisSelect.addEventListener('change', function() {
+        const selectedJenis = this.value; // masuk / keluar
+
+        // Aktifkan select nama kategori
+        namaSelect.disabled = false;
+
+        // Filter opsi kategori sesuai jenis
+        namaSelect.innerHTML = '<option disabled selected>Pilih Nama</option>'; // reset
+        allKategoriOptions.forEach(option => {
+            if (option.dataset.jenis === selectedJenis) {
+                namaSelect.appendChild(option);
+            }
+        });
+    });
+
+    // ---------------- Rupiah Input ----------------
     const rupiahInput = document.getElementById('jumlah_rupiah');
     const hiddenInput = document.getElementById('jumlah_hidden');
 

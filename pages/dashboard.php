@@ -32,7 +32,9 @@ $totalKeluar = 0.0;
 $totalTransaksi = 0;
 
 foreach ($filteredData as $item) {
-    $jumlah = isset($item->jumlah) ? (float) $item->jumlah : 0;
+    $jumlahStr = isset($item->jumlah) ? $item->jumlah : '0';
+    $jumlah = (float) str_replace(['.', ','], ['', '.'], $jumlahStr);
+
     $jenis = isset($item->jenis_kategori) ? trim($item->jenis_kategori) : '';
 
     if (strtolower($jenis) === 'kas masuk' || stripos($jenis, 'masuk') !== false) {
@@ -43,6 +45,7 @@ foreach ($filteredData as $item) {
     $totalTransaksi++;
 }
 
+
 $saldoAkhir = $totalMasuk - $totalKeluar;
 
 $chartLabels = ['Kas Masuk', 'Kas Keluar'];
@@ -51,13 +54,17 @@ $chartData = [round($totalMasuk, 2), round($totalKeluar, 2)];
 $perKategori = [];
 foreach ($filteredData as $item) {
     $cat = isset($item->nama_kategori) && $item->nama_kategori !== '' ? $item->nama_kategori : 'Lainnya';
-    $val = isset($item->jumlah) ? (float)$item->jumlah : 0;
+
+    $jumlahStr = isset($item->jumlah) ? $item->jumlah : '0';
+    $val = (float) str_replace(['.', ','], ['', '.'], $jumlahStr);
+
     if (!isset($perKategori[$cat])) $perKategori[$cat] = 0;
     $perKategori[$cat] += $val;
 }
 arsort($perKategori);
 $kategoriLabels = array_slice(array_keys($perKategori), 0, 8);
 $kategoriValues = array_slice(array_values($perKategori), 0, 8);
+
 
 function format_rp($value)
 {

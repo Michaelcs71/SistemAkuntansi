@@ -46,3 +46,42 @@ if (isset($_POST['update_status_user'])) {
     header("Location: " . $baseURL . "/index.php?link=user");
     exit();
 }
+
+if (isset($_POST['update_status_kategori'])) {
+    $id_kategori = mysqli_real_escape_string($koneksi, $_POST['id_kategori']);
+    $status = mysqli_real_escape_string($koneksi, $_POST['status']);
+
+    $data = [
+        'status' => $status
+    ];
+
+    $conditions = [
+        'id_kategori' => $id_kategori
+    ];
+
+    Update_Data_Status("master_kategori", $data, $conditions);
+
+    header("Location: " . $baseURL . "/index.php?link=kategori");
+    exit();
+}
+
+
+if (isset($_POST['update_user'])) {
+    $user_id = mysqli_real_escape_string($koneksi, $_POST['user_id']);
+    $username = mysqli_real_escape_string($koneksi, $_POST['username']);
+    $password = mysqli_real_escape_string($koneksi, $_POST['password']);
+
+    $data = [
+        'username' => $username,
+        'password' => $password
+    ];
+
+    $conditions = [
+        'user_id' => $user_id
+    ];
+
+    Update_Data_Status("user", $data, $conditions);
+
+    header("Location: " . $baseURL . "/index.php?link=user");
+    exit();
+}

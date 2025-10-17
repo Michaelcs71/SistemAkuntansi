@@ -13,6 +13,8 @@ if (isset($_POST['insert_kategori'])) {
     $data = array(
         'nama_kategori' => mysqli_real_escape_string($koneksi, $_POST['nama_kategori']),
         'jenis_kategori' => mysqli_real_escape_string($koneksi, $_POST['jenis_kategori']),
+        'status' => mysqli_real_escape_string($koneksi, $_POST['status']),
+
     );
 
     // Call the Insert_Data function to insert data

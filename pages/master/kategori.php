@@ -2,7 +2,6 @@
 require_once $_SERVER['DOCUMENT_ROOT'] . "/SistemAkuntansi/webservice/config.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/SistemAkuntansi/lib/function.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/SistemAkuntansi/pages/master/add/kategori.php";
-require_once $_SERVER['DOCUMENT_ROOT'] . "/SistemAkuntansi/pages/master/update/kategori.php";
 if (function_exists('Tampil_Data')) {
     echo "Function Tampil_Data exists.";
 } else {
@@ -49,7 +48,11 @@ if ($data === null) {
                                         <th>Nomor</th>
                                         <th>Nama kategori</th>
                                         <th>Jenis Kategori</th>
-                                        <th>Aksi</th>
+                                        <th>Status</th>
+                                        <?php if ($_SESSION['level'] === "super admin") { ?>
+
+                                            <th>Aksi</th>
+                                        <?php } ?>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -61,17 +64,35 @@ if ($data === null) {
                                             $idkategori = $j->id_kategori;
                                             $namakategori = $j->nama_kategori;
                                             $jeniskategori = $j->jenis_kategori;
+                                            $status = $j->status;
+
                                     ?>
                                             <tr>
                                                 <td><?= $no++ ?></td>
                                                 <td><?= $namakategori ?></td>
                                                 <td><?= $jeniskategori ?></td>
                                                 <td>
-                                                    <button type="button" class="btn btn-primary" id="updateModal"
-                                                        data-bs-toggle="modal" data-bs-target="#updateModalkategori"
-                                                        data-idpkrja="<?= $idkategori ?>" data-nmkategori="<?= $namakategori ?>" data-deskripsi="<?= $jeniskategori ?>">Update</button>
-
+                                                    <form method="POST" action="webservice/update.php" style="display:inline;">
+                                                        <input type="hidden" name="id_kategori" value="<?= $idkategori ?>">
+                                                        <input type="hidden" name="status" value="<?= $status === 'Aktif' ? 'Nonaktif' : 'Aktif' ?>">
+                                                        <button type="submit" name="update_status_kategori"
+                                                            class="btn btn-sm <?= $status === 'Aktif' ? 'btn-success' : 'btn-secondary' ?>">
+                                                            <?= $status ?>
+                                                        </button>
+                                                    </form>
                                                 </td>
+                                                <?php if ($_SESSION['level'] === "super admin") { ?>
+                                                    <td>
+                                                        <form method="POST" action="webservice/delete.php" style="display:inline;"
+                                                            onsubmit="return confirm('Yakin ingin menghapus data ini?');">
+                                                            <input type="hidden" name="id_kategori" value="<?= $idkategori ?>">
+                                                            <button type="submit" name="delete_kategori" class="btn btn-danger ">
+                                                                Hapus
+                                                            </button>
+                                                        </form>
+
+                                                    </td>
+                                                <?php } ?>
                                             </tr>
                                     <?php
                                         }
@@ -91,18 +112,33 @@ if ($data === null) {
 
 <script>
     $(document).ready(function() {
-        $(document).on('click', '#updateModal', function() {
-            var varidkategori = $(this).data('idpkrja');
-            var varnamakategori = $(this).data('nmkategori');
-            var vardeskripsi = $(this).data('deskripsi');
 
-            $('#id_bhn_splr').val(varidkategori);
-            $('#nm_splr').val(varnamakategori);
-            $('#eemaaill').val(vardeskripsi);
+        $('.toggle-status').click(function() {
+            let id = $(this).data('id');
+            let currentStatus = $(this).data('status');
+            let newStatus = currentStatus === 'Aktif' ? 'Nonaktif' : 'Aktif';
 
-
-
+            $.post('webservice/update_status_kategori.php', {
+                id: id,
+                status: newStatus
+            }, function(res) {
+                location.reload();
+            });
         });
+
+        $('.delete-data').click(function() {
+            let id = $(this).data('id');
+
+            if (confirm("Apakah Anda yakin ingin menghapus data ini?")) {
+                $.post('webservice/delete_kategori.php', {
+                    id: id
+                }, function(res) {
+                    location.reload();
+                });
+            }
+        });
+
+
 
     });
 </script>

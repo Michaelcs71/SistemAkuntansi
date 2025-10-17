@@ -2,9 +2,7 @@
 
 session_start();
 
-// Cek apakah user sudah login
 if (!isset($_SESSION['level'])) {
-    // Kalau belum login, arahkan ke halaman login
     header("Location: index.php?link=login");
     exit;
 }
@@ -13,7 +11,8 @@ require_once $_SERVER['DOCUMENT_ROOT'] . "/SistemAkuntansi/webservice/config.php
 require_once $_SERVER['DOCUMENT_ROOT'] . "/SistemAkuntansi/lib/function.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/SistemAkuntansi/pages/master/add/user.php";
 require_once $_SERVER['DOCUMENT_ROOT'] . "/SistemAkuntansi/pages/master/update/user.php";
-// Debugging to ensure file includes are correct
+
+
 if (function_exists('Tampil_Data')) {
     echo "Function Tampil_Data exists.";
 } else {
@@ -97,8 +96,20 @@ if (function_exists('Tampil_Data')) {
                                                         data-bs-toggle="modal"
                                                         data-bs-target="#updateModalUser"
                                                         data-idpkrja="<?= $iduser ?>"
-                                                        data-stts="<?= $status ?>">Update
+                                                        data-stts="<?= $status ?>">Edit
                                                     </button>
+                                                
+                                                <?php if ($_SESSION['level'] === "super admin") { ?>
+                                                    <form method="POST" action="webservice/delete.php" style="display:inline;"
+                                                        onsubmit="return confirm('Yakin ingin menghapus data ini?');">
+                                                        <input type="hidden" name="user_id" value="<?= $iduser ?>">
+                                                        <button type="submit" name="delete_user" class="btn btn-danger ">
+                                                            Hapus
+                                                        </button>
+                                                    </form>
+
+                                                <?php } ?>
+
                                                 </td>
                                             </tr>
                                     <?php
@@ -115,6 +126,9 @@ if (function_exists('Tampil_Data')) {
         </div> <!-- container-fluid -->
     </div>
 </div>
+
+
+
 
 
 <script>
@@ -137,12 +151,26 @@ if (function_exists('Tampil_Data')) {
             let id = $(this).data('id');
 
             if (confirm("Apakah Anda yakin ingin menghapus data ini?")) {
-                $.post('webservice/delete_transaksi.php', {
+                $.post('webservice/delete_user.php', {
                     id: id
                 }, function(res) {
                     location.reload();
                 });
             }
+        });
+
+        $('#updateModalUser').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget); // Tombol yang memicu modal
+            var id = button.data('idpkrja'); // ambil id user
+            var status = button.data('stts'); // ambil status
+            var row = button.closest('tr'); 
+            var username = row.find('td:eq(1)').text(); // ambil username
+            var password = row.find('td:eq(2)').text(); // ambil password
+
+            var modal = $(this);
+            modal.find('#iduserr').val(id);
+            modal.find('#username').val(username);
+            modal.find('#password').val(password);
         });
 
     });

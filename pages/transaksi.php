@@ -31,7 +31,6 @@ if ($selectedMonth && $selectedYear) {
 }
 
 
-// Debugging to ensure data fetch is correct
 if (empty($data)) {
     echo "Data is empty or could not be fetched.";
 } else {
@@ -80,9 +79,7 @@ if (empty($data)) {
                                     </form>
                                 </div>
                             </div>
-                            <?php if (isset($_SESSION['level']) && $_SESSION['level'] === "super admin") { ?>
-                                <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal" data-bs-target="#insertModal">Tambah Data</button>
-                            <?php } ?>
+                            <button type="button" class="btn btn-primary mb-sm-2" data-bs-toggle="modal" data-bs-target="#insertModal">Tambah Data</button>
 
                             <table id="datatable"
                                 class="table table-bordered dt-responsive nowrap w-100 table-striped table-hover text-center">
@@ -95,7 +92,10 @@ if (empty($data)) {
                                         <th>Jumlah</th>
                                         <th>Keterangan</th>
                                         <th>Status</th>
-                                        <th>Aksi</th>
+                                        <?php if ($_SESSION['level'] === "super admin") { ?>
+
+                                            <th>Aksi</th>
+                                        <?php } ?>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -130,17 +130,21 @@ if (empty($data)) {
                                                 </td>
 
                                                 </td>
-                                                <td>
 
-                                                    <form method="POST" action="webservice/delete.php" style="display:inline;"
-                                                        onsubmit="return confirm('Yakin ingin menghapus data ini?');">
-                                                        <input type="hidden" name="id_transaksi" value="<?= $idtransaksi ?>">
-                                                        <button type="submit" name="delete_transaksi" class="btn btn-danger btn-sm">
-                                                            Hapus
-                                                        </button>
-                                                    </form>
+                                                <?php if ($_SESSION['level'] === "super admin") { ?>
 
-                                                </td>
+                                                    <td>
+
+                                                        <form method="POST" action="webservice/delete.php" style="display:inline;"
+                                                            onsubmit="return confirm('Yakin ingin menghapus data ini?');">
+                                                            <input type="hidden" name="id_transaksi" value="<?= $idtransaksi ?>">
+                                                            <button type="submit" name="delete_transaksi" class="btn btn-danger btn-sm">
+                                                                Hapus
+                                                            </button>
+                                                        </form>
+
+                                                    </td>
+                                                <?php } ?>
                                             </tr>
                                         <?php
                                         }
